@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ restaurante.nome }} - Cardápio Digital</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --vermelho-ifood: {{ restaurante.cor_primaria }};
+            --vermelho-escuro: {{ restaurante.cor_primaria }}CC;
+            --cinza-claro: {{ restaurante.cor_secundaria }};
+            --background-color: {{ restaurante.cor_fundo }};
+        }
+        body {
+            background-color: var(--background-color);
+        }
+    </style>
+</head>
+<body data-restaurant-id="{{ restaurante.id }}" data-restaurant-slug="{{ restaurante.slug }}">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">CD</div>
+                <span>{{ restaurante.nome }}</span>
+            </div>
+            
+            <button class="cart-btn">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Carrinho</span>
+                <span class="cart-count">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="restaurant-info">
+            <h1>{{ restaurante.nome }}</h1>
+            <p class="restaurant-description">{{ restaurante.descricao or 'Cardápio digital' }}</p>
+            
+            <div class="restaurant-meta">
+                <div class="meta-item">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ restaurante.tempo_entrega }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-truck"></i>
+                    <span>Taxa: R$ <span class="delivery-fee">{{ "%.2f"|format(restaurante.taxa_entrega) }}</span></span>
+                </div>
+                {% if restaurante.telefone %}
+                <div class="meta-item">
+                    <i class="fas fa-phone"></i>
+                    <span>{{ restaurante.telefone }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Navegação por Categorias -->
+    <nav class="categories">
+        <div class="categories-scroll">
+            <button class="category-btn active" data-category="all">Todos</button>
+            {% for categoria_data in categorias %}
+                {% if categoria_data.produtos %}
+                <button class="category-btn" data-category="cat-{{ categoria_data.categoria.id if categoria_data.categoria.id else 'outros' }}">
+                    {{ categoria_data.categoria.nome }}
+                </button>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </nav>
+
+    <!-- Produtos por Categoria -->
+    <main class="products-section">
+        {% for categoria_data in categorias %}
+            {% if categoria_data.produtos %}
+            <section class="category-section" id="cat-{{ categoria_data.categoria.id if categoria_data.categoria.id else 'outros' }}">
+                <h2 class="category-title">{{ categoria_data.categoria.nome }}</h2>
+                
+                <div class="products-grid">
+                    {% for produto in categoria_data.produtos %}
+                    <div class="product-card" 
+                         data-id="{{ produto.id }}"
+                         data-name="{{ produto.nome }}"
+                         data-price="{{ produto.preco }}"
+                         data-image="{{ url_for('uploaded_file', filename=produto.imagem) if produto.imagem else '' }}"
+                         data-description="{{ produto.descricao or '' }}">
+                        
+                        {% if produto.imagem %}
+                        <img src="{{ url_for('uploaded_file', filename=produto.imagem) }}" 
+                             alt="{{ produto.nome }}" class="product-image">
+                        {% else %}
+                        <div class="product-image" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-utensils" style="font-size: 48px; color: #ccc;"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="product-info">
+                            <h3 class="product-name">{{ produto.nome }}</h3>
+                            <p class="product-description">{{ produto.descricao or '' }}</p>
+                            
+                            <div class="product-footer">
+                                <div class="product-price">
+                                    {% if produto.preco_promocional %}
+                                    <span class="old-price">R$ {{ "%.2f"|format(produto.preco) }}</span>
+                                    <span>R$ {{ "%.2f"|format(produto.preco_promocional) }}</span>
+                                    {% else %}
+                                    <span>R$ {{ "%.2f"|format(produto.preco) }}</span>
+                                    {% endif %}
+                                </div>
+                                <button class="add-to-cart">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+        {% endfor %}
+    </main>
+
+    <!-- Carrinho Sidebar -->
+    <aside class="cart-sidebar">
+        <div class="cart-header">
+            <h3>Meu Carrinho</h3>
+            <button class="close-cart">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="cart-items">
+            <!-- Itens serão inseridos aqui pelo JavaScript -->
+        </div>
+        
+        <div class="cart-footer">
+            <div class="cart-totals">
+                <div class="total-row">
+                    <span>Subtotal</span>
+                    <span class="subtotal">R$ 0.00</span>
+                </div>
+                <div class="total-row">
+                    <span>Taxa de entrega</span>
+                    <span class="delivery-fee">R$ {{ "%.2f"|format(restaurante.taxa_entrega) }}</span>
+                </div>
+                <div class="total-row final">
+                    <span>Total</span>
+                    <span class="total">R$ 0.00</span>
+                </div>
+            </div>
+            
+            <button class="checkout-btn" id="checkoutBtn">
+                <i class="fas fa-lock"></i> Finalizar Pedido
+            </button>
+        </div>
+    </aside>
+
+    <!-- Overlay -->
+    <div class="overlay"></div>
+
+    <!-- Modal de Checkout -->
+    <div class="checkout-modal">
+        <button class="close-modal">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="checkout-header">
+            <h2>Finalizar Pedido</h2>
+            <p>Preencha seus dados para entrega</p>
+        </div>
+        
+        <form class="checkout-form" id="checkoutForm">
+            <div class="form-group">
+                <label for="name">Nome completo *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Telefone *</label>
+                <input type="tel" id="phone" name="phone" 
+                       placeholder="(11) 99999-9999" 
+                       pattern="^\([0-9]{2}\) [0-9]{4,5}-[0-9]{4}$"
+                       title="Digite um telefone válido: (DDD) 9XXXX-XXXX"
+                       required>
+                <small class="phone-hint">Digite com DDD e o 9 na frente</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="address">Endereço completo *</label>
+                <textarea id="address" name="address" rows="3" 
+                          placeholder="Rua, número, complemento, bairro, cidade" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="notes">Observações (opcional)</label>
+                <textarea id="notes" name="notes" rows="2" 
+                          placeholder="Ex: Sem cebola, ponto da carne, etc."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Forma de pagamento *</label>
+                <div class="payment-methods">
+                    <div class="payment-method selected" data-method="dinheiro">
+                        <i class="fas fa-money-bill-wave fa-2x"></i>
+                        <p>Dinheiro</p>
+                    </div>
+                    <div class="payment-method" data-method="cartao">
+                        <i class="fas fa-credit-card fa-2x"></i>
+                        <p>Cartão</p>
+                    </div>
+                    <div class="payment-method" data-method="pix">
+                        <i class="fas fa-qrcode fa-2x"></i>
+                        <p>PIX</p>
+                    </div>
+                </div>
+                <input type="hidden" id="paymentMethod" name="paymentMethod" value="dinheiro">
+            </div>
+            
+            <div class="order-summary">
+                <h3>Resumo do Pedido</h3>
+                <div class="order-items">
+                    <!-- Itens serão inseridos aqui -->
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-order">
+                <i class="fas fa-check"></i> Confirmar Pedido
+            </button>
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    <script>
+        // Função para navegação por categorias
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remover classe active de todos
+                document.querySelectorAll('.category-btn').forEach(b => 
+                    b.classList.remove('active'));
+                
+                // Adicionar ao clicado
+                this.classList.add('active');
+                
+                // Mostrar/ocultar categorias
+                const category = this.dataset.category;
+                
+                if (category === 'all') {
+                    document.querySelectorAll('.category-section').forEach(section => {
+                        section.style.display = 'block';
+                    });
+                } else {
+                    document.querySelectorAll('.category-section').forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    
+                    const element = document.getElementById(category);
+                    if (element) {
+                        element.style.display = 'block';
+                    }
+                }
+                
+                // Rolar para a categoria
+                if (category !== 'all') {
+                    const element = document.getElementById(category);
+                    if (element) {
+                        element.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Carrinho e Checkout
+        let cart = [];
+        const cartCount = document.querySelector('.cart-count');
+        const subtotalElement = document.querySelector('.subtotal');
+        const totalElement = document.querySelector('.total');
+        const cartItemsElement = document.querySelector('.cart-items');
+        const orderItemsElement = document.querySelector('.order-items');
+        
+        // Elementos do DOM
+        const cartBtn = document.querySelector('.cart-btn');
+        const closeCartBtn = document.querySelector('.close-cart');
+        const overlay = document.querySelector('.overlay');
+        const cartSidebar = document.querySelector('.cart-sidebar');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        const checkoutModal = document.querySelector('.checkout-modal');
+        const closeModalBtn = document.querySelector('.close-modal');
+        const checkoutForm = document.getElementById('checkoutForm');
+        
+        // Funções do carrinho
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+        }
+        
+        function updateCartDisplay() {
+            cartItemsElement.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartItemsElement.innerHTML = '<p class="empty-cart">Seu carrinho está vazio</p>';
+                return;
+            }
+            
+            cart.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'cart-item';
+                itemElement.innerHTML = `
+                    <div class="cart-item-info">
+                        <h4>${item.name}</h4>
+                        <p>R$ ${item.price.toFixed(2)}</p>
+                    </div>
+                    <div class="cart-item-controls">
+                        <button class="qty-btn minus" data-id="${item.id}">-</button>
+                        <span class="qty">${item.quantity}</span>
+                        <button class="qty-btn plus" data-id="${item.id}">+</button>
+                        <button class="remove-btn" data-id="${item.id}">Remover</button>
+                    </div>
+                `;
+                cartItemsElement.appendChild(itemElement);
+            });
+            
+            updateCartTotals();
+            attachCartItemEvents();
+        }
+        
+        function updateCartTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = parseFloat('{{ restaurante.taxa_entrega }}');
+            const total = subtotal + deliveryFee;
+            
+            subtotalElement.textContent = `R$ ${subtotal.toFixed(2)}`;
+            totalElement.textContent = `R$ ${total.toFixed(2)}`;
+        }
+        
+        function attachCartItemEvents() {
+            // Botões de quantidade
+            document.querySelectorAll('.qty-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.dataset.id);
+                    const item = cart.find(item => item.id === id);
+                    
+                    if (this.classList.contains('plus')) {
+                        item.quantity++;
+                    } else if (this.classList.contains('minus')) {
+                        item.quantity--;
+                        if (item.quantity <= 0) {
+                            cart = cart.filter(item => item.id !== id);
+                        }
+                    }
+                    
+                    updateCartCount();
+                    updateCartDisplay();
+                });
+            });
+            
+            // Botões de remover
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.dataset.id);
+                    cart = cart.filter(item => item.id !== id);
+                    updateCartCount();
+                    updateCartDisplay();
+                });
+            });
+        }
+        
+        // Adicionar ao carrinho
+        document.querySelectorAll('.add-to-cart').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const productCard = this.closest('.product-card');
+                const id = parseInt(productCard.dataset.id);
+                const name = productCard.dataset.name;
+                const price = parseFloat(productCard.dataset.price);
+                const image = productCard.dataset.image;
+                
+                // Verificar se já está no carrinho
+                const existingItem = cart.find(item => item.id === id);
+                
+                if (existingItem) {
+                    existingItem.quantity++;
+                } else {
+                    cart.push({
+                        id: id,
+                        name: name,
+                        price: price,
+                        image: image,
+                        quantity: 1
+                    });
+                }
+                
+                updateCartCount();
+                updateCartDisplay();
+                
+                // Mostrar feedback visual
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-check"></i>';
+                this.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.background = '';
+                }, 1000);
+            });
+        });
+        
+        // Abrir/fechar carrinho
+        cartBtn.addEventListener('click', () => {
+            cartSidebar.classList.add('active');
+            overlay.classList.add('active');
+        });
+        
+        closeCartBtn.addEventListener('click', () => {
+            cartSidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        overlay.addEventListener('click', () => {
+            cartSidebar.classList.remove('active');
+            checkoutModal.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        // Abrir checkout
+        checkoutBtn.addEventListener('click', () => {
+            if (cart.length === 0) {
+                alert('Adicione itens ao carrinho primeiro!');
+                return;
+            }
+            
+            // Atualizar resumo do pedido no checkout
+            orderItemsElement.innerHTML = '';
+            cart.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'order-item';
+                itemElement.innerHTML = `
+                    <span>${item.name} x${item.quantity}</span>
+                    <span>R$ ${(item.price * item.quantity).toFixed(2)}</span>
+                `;
+                orderItemsElement.appendChild(itemElement);
+            });
+            
+            // Adicionar taxa de entrega
+            const deliveryElement = document.createElement('div');
+            deliveryElement.className = 'order-item';
+            deliveryElement.innerHTML = `
+                <span>Taxa de entrega</span>
+                <span>R$ {{ "%.2f"|format(restaurante.taxa_entrega) }}</span>
+            `;
+            orderItemsElement.appendChild(deliveryElement);
+            
+            checkoutModal.classList.add('active');
+            overlay.classList.add('active');
+        });
+        
+        // Fechar checkout
+        closeModalBtn.addEventListener('click', () => {
+            checkoutModal.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        // Métodos de pagamento
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                document.querySelectorAll('.payment-method').forEach(m => 
+                    m.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('paymentMethod').value = this.dataset.method;
+            });
+        });
+        
+        // Enviar pedido
+        checkoutForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Coletar dados do formulário
+            const formData = {
+                cliente: {
+                    nome: document.getElementById('name').value,
+                    telefone: document.getElementById('phone').value,
+                    endereco: document.getElementById('address').value,
+                    observacoes: document.getElementById('notes').value
+                },
+                forma_pagamento: document.getElementById('paymentMethod').value,
+                restaurante_slug: '{{ restaurante.slug }}',
+                itens: cart.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    subtotal: item.price * item.quantity
+                })),
+                taxa_entrega: parseFloat('{{ restaurante.taxa_entrega }}')
+            };
+            
+            try {
+                const response = await fetch('/api/pedido', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(`🎉 Pedido realizado com sucesso!\n\nNúmero do pedido: ${data.numero_pedido}\nTotal: R$ ${data.total.toFixed(2)}\n\nObrigado por seu pedido!`);
+                    
+                    // Limpar carrinho
+                    cart = [];
+                    updateCartCount();
+                    updateCartDisplay();
+                    
+                    // Fechar modais
+                    checkoutModal.classList.remove('active');
+                    cartSidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                    
+                    // Limpar formulário
+                    checkoutForm.reset();
+                    
+                } else {
+                    alert('Erro: ' + data.error);
+                }
+                
+            } catch (error) {
+                console.error('Erro ao enviar pedido:', error);
+                alert('Erro ao processar pedido. Por favor, tente novamente.');
+            }
+        });
+        
+        // Máscara para telefone
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.substring(0, 11);
+            
+            if (value.length <= 10) {
+                value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+                value = value.replace(/(\d{4})(\d)/, '$1-$2');
+            } else {
+                value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+                value = value.replace(/(\d{5})(\d)/, '$1-$2');
+            }
+            
+            e.target.value = value;
+        });
+        
+        // Inicializar
+        updateCartDisplay();
+    </script>
+</body>
+</html>

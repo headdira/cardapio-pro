@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento em Análise - {{ pedido.restaurante.nome }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: scaleIn 0.5s ease;
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .pending-icon {
+            font-size: 80px;
+            color: #FF9800;
+            margin-bottom: 20px;
+            animation: pulse 1.5s ease infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        h1 {
+            color: #FF9800;
+            margin-bottom: 15px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .status-info {
+            background: #FFF3E0;
+            border: 2px solid #FFE0B2;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: left;
+        }
+        
+        .status-info h3 {
+            color: #FF9800;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-message {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #5D4037;
+        }
+        
+        .process-steps {
+            margin-top: 25px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #FFE0B2;
+        }
+        
+        .step:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .step-number {
+            background: #FF9800;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .step-content h4 {
+            color: #FF9800;
+            margin-bottom: 5px;
+        }
+        
+        .step-content p {
+            color: #5D4037;
+            font-size: 0.95rem;
+        }
+        
+        .order-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .order-details h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .info-value {
+            color: #333;
+        }
+        
+        .timer {
+            background: #FF9800;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .timer i {
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .check-status {
+            margin-top: 20px;
+            padding: 15px;
+            background: #FFF3E0;
+            border-radius: 12px;
+            border-left: 4px solid #FF9800;
+        }
+        
+        .check-status button {
+            background: #FF9800;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .check-status button:hover {
+            background: #F57C00;
+            transform: translateY(-2px);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: #FF9800;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #F57C00;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #dee2e6;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="pending-icon">
+            <i class="fas fa-clock"></i>
+        </div>
+        
+        <h1>Pagamento em Análise</h1>
+        <p class="subtitle">Seu pagamento está sendo processado</p>
+        
+        <div class="timer">
+            <i class="fas fa-sync-alt"></i>
+            <span id="countdown">30:00</span>
+        </div>
+        
+        <div class="status-info">
+            <h3><i class="fas fa-info-circle"></i> O que está acontecendo?</h3>
+            <p class="status-message">
+                Seu pedido foi recebido com sucesso e o pagamento está sendo processado pelo sistema. 
+                Isso pode levar alguns minutos. Você será notificado assim que a confirmação for recebida.
+            </p>
+            
+            <div class="process-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Pagamento Recebido</h4>
+                        <p>Seu pagamento foi enviado para processamento</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Em Análise</h4>
+                        <p>Sistema de pagamento verificando os dados</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Confirmação</h4>
+                        <p>Você receberá a confirmação por aqui e por WhatsApp</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="order-details">
+            <h3><i class="fas fa-receipt"></i> Detalhes do Pedido</h3>
+            <div class="info-row">
+                <span class="info-label">Número:</span>
+                <span class="info-value">{{ pedido.numero_pedido }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Data:</span>
+                <span class="info-value">{{ pedido.criado_em.strftime('%d/%m/%Y %H:%M') }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Valor:</span>
+                <span class="info-value" style="color: #FF9800; font-weight: 700;">
+                    R$ {{ "%.2f"|format(pedido.valor_total) }}
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Status:</span>
+                <span class="info-value" style="color: #FF9800; font-weight: 600;">
+                    ⏳ Aguardando Confirmação
+                </span>
+            </div>
+        </div>
+        
+        <div class="check-status">
+            <p style="margin-bottom: 15px; color: #5D4037;">
+                <i class="fas fa-sync-alt"></i> O status será atualizado automaticamente
+            </p>
+            <button onclick="checkPaymentStatus()">
+                <i class="fas fa-redo"></i> Verificar Status Agora
+            </button>
+        </div>
+        
+        <div class="actions">
+            <a href="/cardapio/{{ pedido.restaurante.slug }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Voltar ao Cardápio
+            </a>
+            <button class="btn btn-primary" onclick="location.reload()">
+                <i class="fas fa-redo"></i> Atualizar Página
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Contador regressivo de 30 minutos
+        let timeLeft = 30 * 60; // 30 minutos em segundos
+        const countdownElement = document.getElementById('countdown');
+        
+        function updateCountdown() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            countdownElement.textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft > 0) {
+                timeLeft--;
+            }
+        }
+        
+        // Atualizar a cada segundo
+        setInterval(updateCountdown, 1000);
+        updateCountdown(); // Chamada inicial
+        
+        // Verificar status do pagamento
+        async function checkPaymentStatus() {
+            try {
+                const response = await fetch(`/api/pagamento/status/{{ pedido.id }}`);
+                const data = await response.json();
+                
+                if (data.status === 'approved') {
+                    // Redirecionar para página de sucesso
+                    window.location.href = "/pagamento/sucesso/{{ pedido.id }}";
+                } else if (data.status === 'rejected') {
+                    // Redirecionar para página de falha
+                    window.location.href = "/pagamento/falha/{{ pedido.id }}";
+                } else {
+                    // Mostrar mensagem de que ainda está pendente
+                    alert('O pagamento ainda está sendo processado. Tente novamente em alguns instantes.');
+                }
+            } catch (error) {
+                console.error('Erro ao verificar status:', error);
+                alert('Não foi possível verificar o status. Tente novamente.');
+            }
+        }
+        
+        // Verificar status automaticamente a cada 30 segundos
+        setInterval(checkPaymentStatus, 30000);
+        
+        // Auto-redirecionamento após 30 minutos
+        setTimeout(() => {
+            window.location.href = "/cardapio/{{ pedido.restaurante.slug }}";
+        }, 30 * 60 * 1000);
+    </script>
+</body>
+</html>

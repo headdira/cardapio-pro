@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Aprovado - {{ pedido.restaurante.nome }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: scaleIn 0.5s ease;
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite alternate;
+        }
+        
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+        
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 15px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .order-info {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+            text-align: left;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .info-section {
+            margin-bottom: 20px;
+        }
+        
+        .info-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .info-section h3 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .payment-badge {
+            display: inline-block;
+            background: #00B1EA;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .items-list {
+            margin-top: 15px;
+        }
+        
+        .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #dee2e6;
+        }
+        
+        .item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-name {
+            flex: 1;
+        }
+        
+        .item-quantity {
+            margin: 0 15px;
+            color: #666;
+        }
+        
+        .item-price {
+            font-weight: 600;
+            color: #4CAF50;
+        }
+        
+        .delivery-eta {
+            background: #E8F5E9;
+            border: 2px solid #4CAF50;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .eta-icon {
+            font-size: 2rem;
+            color: #4CAF50;
+        }
+        
+        .eta-text {
+            text-align: left;
+        }
+        
+        .eta-text strong {
+            color: #4CAF50;
+        }
+        
+        .whatsapp-notice {
+            background: #25D366;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .whatsapp-icon {
+            font-size: 1.5rem;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #388E3C;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #dee2e6;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        
+        <h1>Pagamento Aprovado!</h1>
+        <p class="subtitle">Seu pagamento foi processado com sucesso</p>
+        
+        <div class="order-info">
+            <div class="info-section">
+                <h3><i class="fas fa-receipt"></i> Detalhes do Pedido</h3>
+                <div class="info-row">
+                    <span class="info-label">Número:</span>
+                    <span class="info-value">{{ pedido.numero_pedido }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Data:</span>
+                    <span class="info-value">{{ pedido.criado_em.strftime('%d/%m/%Y %H:%M') }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Status:</span>
+                    <span class="info-value" style="color: {{ pedido.status_cor }}; font-weight: 600;">
+                        {{ pedido.status_display }}
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Valor Total:</span>
+                    <span class="info-value" style="color: #4CAF50; font-weight: 700;">
+                        R$ {{ "%.2f"|format(pedido.valor_total) }}
+                    </span>
+                </div>
+            </div>
+            
+            {% if pagamento %}
+            <div class="info-section">
+                <h3><i class="fas fa-credit-card"></i> Informações do Pagamento</h3>
+                <div class="info-row">
+                    <span class="info-label">Status:</span>
+                    <span class="info-value" style="color: #4CAF50; font-weight: 600;">
+                        {% if pagamento.status == 'approved' %}Aprovado{% endif %}
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Método:</span>
+                    <span class="info-value">
+                        {{ pagamento.metodo_pagamento|title if pagamento.metodo_pagamento else 'Mercado Pago' }}
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ID do Pagamento:</span>
+                    <span class="info-value" style="font-family: monospace; font-size: 0.9rem;">
+                        {{ pagamento.pagamento_id[:20] }}...
+                    </span>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="info-section">
+                <h3><i class="fas fa-user"></i> Dados de Entrega</h3>
+                <div class="info-row">
+                    <span class="info-label">Cliente:</span>
+                    <span class="info-value">{{ pedido.nome_cliente }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Telefone:</span>
+                    <span class="info-value">{{ pedido.telefone }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Endereço:</span>
+                    <span class="info-value">{{ pedido.endereco }}</span>
+                </div>
+                {% if pedido.observacoes %}
+                <div class="info-row">
+                    <span class="info-label">Observações:</span>
+                    <span class="info-value">{{ pedido.observacoes }}</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="info-section">
+                <h3><i class="fas fa-shopping-cart"></i> Itens do Pedido</h3>
+                <div class="items-list">
+                    {% for item in pedido.itens %}
+                    <div class="item">
+                        <span class="item-name">{{ item.name }}</span>
+                        <span class="item-quantity">{{ item.quantity }}x</span>
+                        <span class="item-price">R$ {{ "%.2f"|format(item.subtotal) }}</span>
+                    </div>
+                    {% endfor %}
+                    {% if pedido.taxa_entrega > 0 %}
+                    <div class="item">
+                        <span class="item-name">Taxa de Entrega</span>
+                        <span class="item-quantity">1x</span>
+                        <span class="item-price">R$ {{ "%.2f"|format(pedido.taxa_entrega) }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="delivery-eta">
+            <div class="eta-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="eta-text">
+                <p><strong>Tempo estimado de entrega:</strong></p>
+                <p>{{ pedido.restaurante.tempo_entrega }}</p>
+            </div>
+        </div>
+        
+        <div class="whatsapp-notice">
+            <div class="whatsapp-icon">
+                <i class="fab fa-whatsapp"></i>
+            </div>
+            <div>
+                <p><strong>Você receberá atualizações por WhatsApp!</strong></p>
+                <p style="font-size: 0.9rem; opacity: 0.9;">O restaurante notificará sobre o status do seu pedido</p>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <a href="/cardapio/{{ pedido.restaurante.slug }}" class="btn btn-secondary">
+                <i class="fas fa-utensils"></i> Novo Pedido
+            </a>
+            <button class="btn btn-primary" onclick="window.print()">
+                <i class="fas fa-print"></i> Imprimir Recibo
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Animação de confetes (simples)
+        function createConfetti() {
+            const colors = ['#4CAF50', '#2196F3', '#FF9800', '#E91E63'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.cssText = `
+                    position: fixed;
+                    width: 10px;
+                    height: 10px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    border-radius: 50%;
+                    top: -20px;
+                    left: ${Math.random() * 100}vw;
+                    animation: fall ${Math.random() * 3 + 2}s linear forwards;
+                    z-index: 9999;
+                    pointer-events: none;
+                `;
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+        
+        document.head.insertAdjacentHTML('beforeend', `
+            <style>
+                @keyframes fall {
+                    to {
+                        transform: translateY(100vh) rotate(${Math.random() * 360}deg);
+                        opacity: 0;
+                    }
+                }
+            </style>
+        `);
+        
+        // Criar confetes após 500ms
+        setTimeout(createConfetti, 500);
+        
+        // Auto-redirecionamento após 60 segundos
+        setTimeout(() => {
+            window.location.href = "/cardapio/{{ pedido.restaurante.slug }}";
+        }, 60000);
+    </script>
+</body>
+</html>

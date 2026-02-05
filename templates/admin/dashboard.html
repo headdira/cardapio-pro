@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - {{ restaurante.nome }}</title>
+    <style>
+        /* Estilos do dashboard mantidos */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: {{ restaurante.cor_primaria or '#EA1D2C' }};
+            margin-bottom: 10px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-menu a {
+            padding: 10px 20px;
+            background: white;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .nav-menu a.active {
+            background: {{ restaurante.cor_primaria or '#EA1D2C' }};
+            color: white;
+        }
+        
+        .nav-menu a:hover {
+            transform: translateY(-2px);
+            transition: transform 0.2s;
+        }
+        
+        /* Restante dos estilos do dashboard */
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header">
+            <h1>📊 {{ restaurante.nome }} - Dashboard</h1>
+            <p>Bem-vindo ao painel de controle do seu restaurante</p>
+        </div>
+        
+        <div class="nav-menu">
+            <a href="/admin/{{ restaurante.id }}" class="active">📊 Dashboard</a>
+            <a href="/admin/{{ restaurante.id }}/produtos">🍽️ Produtos</a>
+            <a href="/admin/{{ restaurante.id }}/categorias">📁 Categorias</a>
+            <a href="/admin/{{ restaurante.id }}/pedidos">📦 Pedidos</a>
+            <a href="/admin/{{ restaurante.id }}/configuracoes">⚙️ Configurações</a>
+            <a href="/cardapio/{{ restaurante.slug }}" target="_blank">🌐 Ver Cardápio</a>
+        </div>
+        
+        <!-- Resto do conteúdo do dashboard -->
+    </div>
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cardápio Digital Pro — Venda pelo WhatsApp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #22c55e;
+      --primary-hover: #16a34a;
+      --bg: #020617;
+      --card-bg: #0f172a;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #1e293b;
+      --danger: #f87171;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      background-image: radial-gradient(circle at top right, #1e293b, transparent);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 80px 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.6rem, 5vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      letter-spacing: -0.03em;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+    }
+
+    .highlight {
+      background: linear-gradient(120deg, var(--primary), #4ade80);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p {
+      color: var(--text-muted);
+    }
+
+    .btn {
+      display: inline-block;
+      background: var(--primary);
+      color: #022c22;
+      padding: 18px 36px;
+      border-radius: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 15px 25px rgba(34, 197, 94, 0.25);
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 25px 35px rgba(34, 197, 94, 0.35);
+    }
+
+    .hero {
+      padding: 140px 20px;
+      text-align: center;
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      max-width: 760px;
+      margin: 0 auto 32px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 32px;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: var(--primary);
+      transform: translateY(-6px);
+    }
+
+    .feature-list {
+      list-style: none;
+      margin-top: 16px;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 14px;
+      font-size: 1.05rem;
+    }
+
+    .feature-list li::before {
+      content: "✓";
+      margin-right: 12px;
+      color: var(--primary);
+      font-weight: bold;
+      background: rgba(34,197,94,0.15);
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 0.8rem;
+    }
+
+    .bad li::before {
+      content: "✕";
+      color: var(--danger);
+      background: rgba(248,113,113,0.15);
+    }
+
+    .cta {
+      background: linear-gradient(rgba(15,23,42,0.9), rgba(15,23,42,0.9)),
+        url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2000');
+      background-size: cover;
+      background-position: center;
+      padding: 90px 24px;
+      text-align: center;
+      border-radius: 32px;
+      border: 1px solid var(--border);
+    }
+
+    .faq details {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .faq summary {
+      font-weight: 600;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 50px 24px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .legal {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <h1>
+        Cardápio Digital com <span class="highlight">Pedidos no WhatsApp</span><br>
+        e Pagamento Direto para Você
+      </h1>
+
+      <p>
+        Crie seu cardápio online, receba pedidos organizados no WhatsApp
+        e pare de perder até <strong>30% do seu faturamento</strong> com apps de delivery.
+      </p>
+
+      <a href="#cta" class="btn">Criar meu cardápio agora</a>
+
+      <p style="margin-top: 20px; font-size: 0.9rem;">
+        💸 Pix sem taxas • ⚡ Setup em 5 minutos • 🔒 Sem contrato
+      </p>
+    </div>
+  </section>
+
+  <!-- PROBLEMA VS SOLUÇÃO -->
+  <section class="container">
+    <div class="grid">
+      <div class="card">
+        <h3>O problema dos apps</h3>
+        <ul class="feature-list bad">
+          <li>Taxas de até 30% por pedido</li>
+          <li>Você não tem os dados dos clientes</li>
+          <li>Repasse demora semanas</li>
+          <li>Cliente é do aplicativo, não seu</li>
+        </ul>
+      </div>
+
+      <div class="card" style="border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.05);">
+        <h3 style="color: var(--primary);">O Cardápio Digital Pro</h3>
+        <ul class="feature-list">
+          <li>Pedido direto pelo seu WhatsApp</li>
+          <li>Pagamento Pix sem taxa</li>
+          <li>Cliente vira contato seu</li>
+          <li>Receba na hora, todo dia</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="container">
+  <h2>Planos simples e sem pegadinhas</h2>
+  <p style="text-align:center; max-width:700px; margin:0 auto 50px;">
+    Você escolhe como prefere pagar. Em todos os planos o cliente compra pelo seu cardápio
+    e o pedido chega direto no seu WhatsApp.
+  </p>
+
+  <div class="grid">
+
+    <!-- PLANO START -->
+    <div class="card">
+      <h3>Plano Start</h3>
+      <p style="font-size:2.2rem; font-weight:800; margin:10px 0;">
+        R$ 19,90<span style="font-size:1rem; font-weight:500;">/mês</span>
+      </p>
+
+      <p style="margin-bottom:16px;">
+        Ideal para quem está começando ou quer testar o sistema.
+      </p>
+
+      <ul class="feature-list">
+        <li>Cardápio digital ilimitado</li>
+        <li>Pedidos automáticos no WhatsApp</li>
+        <li>Pagamento via Pix integrado</li>
+        <li>Gestão de produtos e preços</li>
+        <li>Base de clientes é sua</li>
+        <li><strong>Taxa de R$ 0,25 por pedido no Pix</strong></li>
+      </ul>
+
+      <a href="#cta" class="btn" style="margin-top:20px; width:100%; text-align:center;">
+        Começar com Start
+      </a>
+    </div>
+
+    <!-- PLANO PRO -->
+    <div class="card" style="border-color: rgba(34,197,94,0.5); background: rgba(34,197,94,0.06);">
+      <h3 style="color: var(--primary);">Plano Pro 🚀</h3>
+
+      <p style="font-size:2.4rem; font-weight:800; margin:10px 0;">
+        R$ 29,90<span style="font-size:1rem; font-weight:500;">/mês</span>
+      </p>
+
+      <p style="margin-bottom:16px;">
+        Para quem quer vender sem se preocupar com taxa por pedido.
+      </p>
+
+      <ul class="feature-list">
+        <li>Cardápio digital ilimitado</li>
+        <li>Pedidos automáticos no WhatsApp</li>
+        <li>Pagamento Pix automático</li>
+        <li>Gestão em tempo real</li>
+        <li>Base completa de clientes</li>
+        <li><strong>Zero taxa por pedido</strong></li>
+        <li><strong>Paga apenas a mensalidade</strong></li>
+      </ul>
+
+      <a href="#cta" class="btn" style="margin-top:20px; width:100%; text-align:center;">
+        Quero o Plano Pro
+      </a>
+    </div>
+
+  </div>
+
+  <p style="text-align:center; margin-top:30px; font-size:0.95rem; color:var(--text-muted);">
+    💡 Ambos os planos sem fidelidade. Cancele quando quiser.
+  </p>
+</section>
+
+
+  <!-- FEATURES -->
+  <section class="container">
+    <h2>O que você está comprando</h2>
+
+    <div class="grid">
+      <div class="card">
+        <h3>📋 Cardápio Profissional</h3>
+        <p>Crie categorias, preços, adicionais, descrições e fotos. Tudo otimizado para celular.</p>
+      </div>
+
+      <div class="card">
+        <h3>📲 Pedidos Automáticos no WhatsApp</h3>
+        <p>O cliente escolhe, finaliza e o pedido chega formatado no seu WhatsApp, pronto para produção.</p>
+      </div>
+
+      <div class="card">
+        <h3>💳 Pagamento Integrado</h3>
+        <p>Receba via Pix automático, cartão online ou pagamento na entrega.</p>
+      </div>
+
+      <div class="card">
+        <h3>📈 Aumento de Ticket Médio</h3>
+        <p>Sugestão de adicionais e combos no momento da compra.</p>
+      </div>
+
+      <div class="card">
+        <h3>⚡ Gestão em Tempo Real</h3>
+        <p>Pause produtos, altere preços e horários em segundos.</p>
+      </div>
+
+      <div class="card">
+        <h3>📊 Base de Clientes</h3>
+        <p>Os contatos são seus para promoções, cupons e campanhas futuras.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="container">
+    <section id="cta" class="cta">
+      <h2>Comece hoje a vender sem taxas</h2>
+      <p style="color:#fff;">
+        Teste grátis por 7 dias. Sem cartão de crédito.
+      </p>
+      <br>
+      <a href="#" class="btn">Criar meu cardápio agora</a>
+    </section>
+  </div>
+
+  <!-- FAQ -->
+  <section class="container faq">
+    <h2>Perguntas Frequentes</h2>
+
+    <details>
+      <summary>Precisa baixar aplicativo?</summary>
+      <p>Não. O cliente acessa direto pelo navegador do celular.</p>
+    </details>
+
+    <details>
+      <summary>Funciona com WhatsApp normal?</summary>
+      <p>Sim. Você recebe os pedidos diretamente no seu WhatsApp.</p>
+    </details>
+
+    <details>
+      <summary>Existe limite de pedidos?</summary>
+      <p>Não. Venda o quanto quiser, sem comissão por pedido.</p>
+    </details>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 • Cardápio Digital Pro</p>
+    <p class="legal">
+      CNPJ: 51.881.694/0001-54<br>
+      Plataforma de Cardápio Digital e Gestão de Pedidos
+    </p>
+  </footer>
+
+</body>
+</html>

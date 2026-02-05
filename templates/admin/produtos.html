@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos - {{ restaurante.nome }}</title>
+    <style>
+        /* Mesmos estilos do dashboard.html */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; color: #333; }
+        .admin-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header h1 { color: {{ restaurante.cor_primaria or '#EA1D2C' }}; margin-bottom: 10px; }
+        .nav-menu { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .nav-menu a { padding: 10px 20px; background: white; border-radius: 5px; text-decoration: none; color: #333; font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .nav-menu a.active { background: {{ restaurante.cor_primaria or '#EA1D2C' }}; color: white; }
+        .section { background: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .btn { padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; margin: 5px; }
+        .btn-primary { background: {{ restaurante.cor_primaria or '#EA1D2C' }}; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th { background: #f8f9fa; padding: 12px; text-align: left; font-weight: 600; color: #495057; border-bottom: 2px solid #dee2e6; }
+        .table td { padding: 12px; border-bottom: 1px solid #dee2e6; }
+        .product-img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 5% auto; padding: 30px; border-radius: 10px; width: 90%; max-width: 500px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; margin-right: 10px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background: {{ restaurante.cor_primaria or '#EA1D2C' }}; }
+        input:checked + .slider:before { transform: translateX(26px); }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header">
+            <h1>🍽️ {{ restaurante.nome }} - Produtos</h1>
+            <p>Gerencie os produtos do seu cardápio</p>
+        </div>
+        
+       <!-- Menu de Navegação (adicione em dashboard.html, produtos.html, pedidos.html) -->
+<div class="nav-menu">
+    <a href="/admin/{{ restaurante.id }}">📊 Dashboard</a>
+    <a href="/admin/{{ restaurante.id }}/produtos">🍽️ Produtos</a>
+    <a href="/admin/{{ restaurante.id }}/categorias">📁 Categorias</a>
+    <a href="/admin/{{ restaurante.id }}/pedidos">📦 Pedidos</a>
+    <a href="/admin/{{ restaurante.id }}/configuracoes">⚙️ Configurações</a>
+    <a href="/cardapio/{{ restaurante.slug }}" target="_blank">🌐 Ver Cardápio</a>
+</div>
+        
+        <div class="section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Lista de Produtos</h2>
+                <button class="btn btn-primary" onclick="abrirModalNovo()">➕ Novo Produto</button>
+            </div>
+            
+            {% if produtos %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Imagem</th>
+                            <th>Nome</th>
+                            <th>Categoria</th>
+                            <th>Preço</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for produto in produtos %}
+                        <tr>
+                            <td>
+                                {% if produto.imagem %}
+                                    <img src="/uploads/{{ produto.imagem }}" class="product-img" alt="{{ produto.nome }}">
+                                {% else %}
+                                    <div style="width: 60px; height: 60px; background: #f0f0f0; border-radius: 5px; display: flex; align-items: center; justify-content: center;">
+                                        📷
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>{{ produto.nome }}</td>
+                            <td>
+                                {% if produto.categoria_id %}
+                                    {% for cat in categorias %}
+                                        {% if cat.id == produto.categoria_id %}
+                                            {{ cat.nome }}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <span style="color: #999;">Sem categoria</span>
+                                {% endif %}
+                            </td>
+                            <td>R$ {{ "%.2f"|format(produto.preco) }}</td>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" id="status-{{ produto.id }}" 
+                                           {% if produto.disponivel %}checked{% endif %}
+                                           onchange="toggleStatus({{ produto.id }})">
+                                    <span class="slider"></span>
+                                </label>
+                                {{ 'Disponível' if produto.disponivel else 'Indisponível' }}
+                            </td>
+                            <td>
+                                <button class="btn btn-secondary" onclick="editarProduto({{ produto.id }})">✏️ Editar</button>
+                                <button class="btn btn-danger" onclick="excluirProduto({{ produto.id }})">🗑️ Excluir</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p style="text-align: center; padding: 40px; color: #666;">
+                    Nenhum produto cadastrado. Clique em "Novo Produto" para começar.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Modal Novo Produto -->
+    <div id="modalNovo" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 20px;">➕ Novo Produto</h2>
+            <form id="formNovo" method="POST" action="/admin/{{ restaurante.id }}/produto/novo" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="nome">Nome do Produto *</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" name="descricao" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="categoria_id">Categoria</label>
+                    <select id="categoria_id" name="categoria_id">
+                        <option value="">Sem categoria</option>
+                        {% for categoria in categorias %}
+                        <option value="{{ categoria.id }}">{{ categoria.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="preco">Preço (R$) *</label>
+                    <input type="number" id="preco" name="preco" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="imagem">Imagem</label>
+                    <input type="file" id="imagem" name="imagem" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="disponivel" checked> Disponível
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="destaque"> Produto em Destaque
+                    </label>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary">Salvar Produto</button>
+                    <button type="button" class="btn btn-secondary" onclick="fecharModalNovo()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function abrirModalNovo() {
+            document.getElementById('modalNovo').style.display = 'block';
+        }
+        
+        function fecharModalNovo() {
+            document.getElementById('modalNovo').style.display = 'none';
+        }
+        
+        function toggleStatus(produtoId) {
+            const checkbox = document.getElementById('status-' + produtoId);
+            const disponivel = checkbox.checked;
+            
+            fetch('/admin/{{ restaurante.id }}/produto/' + produtoId + '/editar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'disponivel=' + (disponivel ? 'on' : '')
+            });
+        }
+        
+        function excluirProduto(produtoId) {
+            if(confirm('Tem certeza que deseja excluir este produto?')) {
+                fetch('/admin/{{ restaurante.id }}/produto/' + produtoId + '/excluir', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+        
+        function editarProduto(produtoId) {
+            // Implementar edição de produto
+            alert('Funcionalidade de edição em desenvolvimento!');
+        }
+        
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalNovo');
+            if(event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

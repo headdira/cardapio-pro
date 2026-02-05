@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - {{ restaurante.nome }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: {{ restaurante.cor_primaria }};
+            margin-bottom: 10px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-menu a {
+            padding: 10px 20px;
+            background: white;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .nav-menu a.active {
+            background: {{ restaurante.cor_primaria }};
+            color: white;
+        }
+        
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #444;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        .form-group input[type="color"] {
+            width: 60px;
+            height: 40px;
+            padding: 2px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: {{ restaurante.cor_primaria }};
+        }
+        
+        .color-preview {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .color-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .two-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: {{ restaurante.cor_primaria }};
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: {{ restaurante.cor_primaria }}DD;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .url-preview {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        
+        .url-preview a {
+            color: {{ restaurante.cor_primaria }};
+            text-decoration: none;
+        }
+        
+        .url-preview a:hover {
+            text-decoration: underline;
+        }
+        
+        .info-box {
+            background: #e8f4fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .info-box p {
+            margin: 5px 0;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header">
+            <h1>⚙️ {{ restaurante.nome }} - Configurações</h1>
+            <p>Personalize seu cardápio digital</p>
+        </div>
+        
+        <!-- Menu de Navegação -->
+      <!-- Menu de Navegação (adicione em dashboard.html, produtos.html, pedidos.html) -->
+<div class="nav-menu">
+    <a href="/admin/{{ restaurante.id }}">📊 Dashboard</a>
+    <a href="/admin/{{ restaurante.id }}/produtos">🍽️ Produtos</a>
+    <a href="/admin/{{ restaurante.id }}/categorias">📁 Categorias</a>
+    <a href="/admin/{{ restaurante.id }}/pedidos">📦 Pedidos</a>
+    <a href="/admin/{{ restaurante.id }}/configuracoes">⚙️ Configurações</a>
+    <a href="/cardapio/{{ restaurante.slug }}" target="_blank">🌐 Ver Cardápio</a>
+</div>
+        
+        <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category or 'info' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" action="/admin/{{ restaurante.id }}/configuracoes">
+            <!-- Informações Básicas -->
+            <div class="section">
+                <h2>📋 Informações Básicas</h2>
+                
+                <div class="form-group">
+                    <label for="nome">Nome do Restaurante *</label>
+                    <input type="text" id="nome" name="nome" value="{{ restaurante.nome }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" name="descricao" rows="3">{{ restaurante.descricao or '' }}</textarea>
+                    <small>Esta descrição aparecerá no topo do seu cardápio.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="telefone">Telefone para Contato</label>
+                    <input type="text" id="telefone" name="telefone" value="{{ restaurante.telefone or '' }}">
+                </div>
+            </div>
+            
+            <!-- Configurações de Entrega -->
+            <div class="section">
+                <h2>🚚 Configurações de Entrega</h2>
+                
+                <div class="two-columns">
+                    <div class="form-group">
+                        <label for="taxa_entrega">Taxa de Entrega (R$)</label>
+                        <input type="number" id="taxa_entrega" name="taxa_entrega" 
+                               value="{{ restaurante.taxa_entrega }}" step="0.01" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tempo_entrega">Tempo de Entrega</label>
+                        <input type="text" id="tempo_entrega" name="tempo_entrega" 
+                               value="{{ restaurante.tempo_entrega }}" 
+                               placeholder="Ex: 30-45 min, 40-60 min">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Personalização de Cores -->
+            <div class="section">
+                <h2>🎨 Personalização de Cores</h2>
+                <p>Escolha as cores do seu cardápio digital:</p>
+                
+                <div class="two-columns">
+                    <div class="form-group">
+                        <label for="cor_primaria">Cor Primária</label>
+                        <div class="color-preview">
+                            <input type="color" id="cor_primaria" name="cor_primaria" 
+                                   value="{{ restaurante.cor_primaria or '#EA1D2C' }}">
+                            <div class="color-box" id="corPrimariaPreview" 
+                                 style="background: {{ restaurante.cor_primaria or '#EA1D2C' }};"></div>
+                            <input type="text" id="cor_primaria_text" 
+                                   value="{{ restaurante.cor_primaria or '#EA1D2C' }}"
+                                   onchange="document.getElementById('cor_primaria').value = this.value; updateColorPreview();">
+                        </div>
+                        <small>Usada para botões e destaques</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cor_secundaria">Cor Secundária</label>
+                        <div class="color-preview">
+                            <input type="color" id="cor_secundaria" name="cor_secundaria" 
+                                   value="{{ restaurante.cor_secundaria or '#F6F6F6' }}">
+                            <div class="color-box" id="corSecundariaPreview" 
+                                 style="background: {{ restaurante.cor_secundaria or '#F6F6F6' }};"></div>
+                            <input type="text" id="cor_secundaria_text" 
+                                   value="{{ restaurante.cor_secundaria or '#F6F6F6' }}"
+                                   onchange="document.getElementById('cor_secundaria').value = this.value; updateColorPreview();">
+                        </div>
+                        <small>Usada para fundos secundários</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cor_fundo">Cor de Fundo</label>
+                        <div class="color-preview">
+                            <input type="color" id="cor_fundo" name="cor_fundo" 
+                                   value="{{ restaurante.cor_fundo or '#FFFFFF' }}">
+                            <div class="color-box" id="corFundoPreview" 
+                                 style="background: {{ restaurante.cor_fundo or '#FFFFFF' }};"></div>
+                            <input type="text" id="cor_fundo_text" 
+                                   value="{{ restaurante.cor_fundo or '#FFFFFF' }}"
+                                   onchange="document.getElementById('cor_fundo').value = this.value; updateColorPreview();">
+                        </div>
+                        <small>Cor de fundo principal do cardápio</small>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <p><strong>💡 Dica:</strong> Para uma aparência profissional:</p>
+                    <p>• Cor primária: Escolha uma cor vibrante (como vermelho, laranja ou verde)</p>
+                    <p>• Cor secundária: Use uma cor neutra (cinza claro, branco)</p>
+                    <p>• Cor de fundo: Geralmente branco ou cinza muito claro</p>
+                </div>
+            </div>
+            
+            <!-- Link do Cardápio -->
+            <div class="section">
+                <h2>🔗 Link do Seu Cardápio</h2>
+                <p>Este é o link que você pode compartilhar com seus clientes:</p>
+                
+                <div class="url-preview">
+                    <strong>URL do Cardápio:</strong><br>
+                    <a href="/cardapio/{{ restaurante.slug }}" target="_blank" id="cardapioUrl">
+                        {{ request.host_url }}cardapio/{{ restaurante.slug }}
+                    </a>
+                    <button type="button" onclick="copiarLink()" style="margin-left: 10px; padding: 5px 10px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        📋 Copiar Link
+                    </button>
+                </div>
+                
+                <div class="info-box">
+                    <p><strong>📱 Como usar:</strong></p>
+                    <p>1. Copie o link acima e compartilhe no WhatsApp, Instagram, etc.</p>
+                    <p>2. Cole em seu perfil do Google Meu Negócio</p>
+                    <p>3. Use em materiais de marketing</p>
+                </div>
+            </div>
+            
+            <!-- Botões de Ação -->
+            <div class="section">
+                <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                    <a href="/admin/{{ restaurante.id }}" class="btn btn-secondary">
+                        ↩️ Voltar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        💾 Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        function updateColorPreview() {
+            document.getElementById('corPrimariaPreview').style.background = 
+                document.getElementById('cor_primaria').value;
+            document.getElementById('corSecundariaPreview').style.background = 
+                document.getElementById('cor_secundaria').value;
+            document.getElementById('corFundoPreview').style.background = 
+                document.getElementById('cor_fundo').value;
+            
+            // Atualizar também os campos de texto
+            document.getElementById('cor_primaria_text').value = 
+                document.getElementById('cor_primaria').value;
+            document.getElementById('cor_secundaria_text').value = 
+                document.getElementById('cor_secundaria').value;
+            document.getElementById('cor_fundo_text').value = 
+                document.getElementById('cor_fundo').value;
+        }
+        
+        function copiarLink() {
+            const link = document.getElementById('cardapioUrl').href;
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Link copiado para a área de transferência!');
+            }).catch(err => {
+                console.error('Erro ao copiar: ', err);
+                alert('Não foi possível copiar o link.');
+            });
+        }
+        
+        // Atualizar preview quando cores mudam
+        document.getElementById('cor_primaria').addEventListener('input', updateColorPreview);
+        document.getElementById('cor_secundaria').addEventListener('input', updateColorPreview);
+        document.getElementById('cor_fundo').addEventListener('input', updateColorPreview);
+        
+        // Atualizar color picker quando texto muda
+        document.getElementById('cor_primaria_text').addEventListener('input', function() {
+            document.getElementById('cor_primaria').value = this.value;
+            updateColorPreview();
+        });
+        
+        document.getElementById('cor_secundaria_text').addEventListener('input', function() {
+            document.getElementById('cor_secundaria').value = this.value;
+            updateColorPreview();
+        });
+        
+        document.getElementById('cor_fundo_text').addEventListener('input', function() {
+            document.getElementById('cor_fundo').value = this.value;
+            updateColorPreview();
+        });
+        
+        // Prevenir envio do formulário com Enter nos campos de cor
+        document.querySelectorAll('input[type="text"]').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

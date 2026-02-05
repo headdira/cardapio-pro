@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Não Aprovado - {{ pedido.restaurante.nome }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #F44336, #D32F2F);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: scaleIn 0.5s ease;
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .error-icon {
+            font-size: 80px;
+            color: #F44336;
+            margin-bottom: 20px;
+            animation: shake 0.5s ease infinite alternate;
+        }
+        
+        @keyframes shake {
+            from { transform: translateX(-5px); }
+            to { transform: translateX(5px); }
+        }
+        
+        h1 {
+            color: #F44336;
+            margin-bottom: 15px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .error-info {
+            background: #FFF5F5;
+            border: 2px solid #FFCDD2;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: left;
+            color: #C62828;
+        }
+        
+        .error-info h3 {
+            color: #F44336;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .error-message {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .suggestions {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #FFCDD2;
+        }
+        
+        .suggestions h4 {
+            color: #F44336;
+            margin-bottom: 10px;
+        }
+        
+        .suggestions ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+        
+        .suggestions li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        
+        .suggestions li:before {
+            content: "•";
+            color: #F44336;
+            font-weight: bold;
+        }
+        
+        .order-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .order-details h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .info-value {
+            color: #333;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: #F44336;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #D32F2F;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #dee2e6;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .support {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid #f0f0f0;
+            color: #666;
+        }
+        
+        .support p {
+            margin-bottom: 10px;
+        }
+        
+        .support-phone {
+            color: #F44336;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-icon">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        
+        <h1>Pagamento Não Aprovado</h1>
+        <p class="subtitle">Houve um problema com o seu pagamento</p>
+        
+        <div class="error-info">
+            <h3><i class="fas fa-exclamation-triangle"></i> O que aconteceu?</h3>
+            <p class="error-message">
+                Seu pagamento não foi processado com sucesso. Isso pode ter acontecido por vários motivos, 
+                como problemas com o cartão, limite insuficiente ou dados incorretos.
+            </p>
+            
+            <div class="suggestions">
+                <h4><i class="fas fa-lightbulb"></i> O que fazer agora?</h4>
+                <ul>
+                    <li>Verifique os dados do seu cartão</li>
+                    <li>Confirme se há limite disponível</li>
+                    <li>Tente usar outra forma de pagamento</li>
+                    <li>Entre em contato com sua operadora</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="order-details">
+            <h3><i class="fas fa-receipt"></i> Detalhes do Pedido</h3>
+            <div class="info-row">
+                <span class="info-label">Número:</span>
+                <span class="info-value">{{ pedido.numero_pedido }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Data:</span>
+                <span class="info-value">{{ pedido.criado_em.strftime('%d/%m/%Y %H:%M') }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Valor:</span>
+                <span class="info-value" style="color: #F44336; font-weight: 700;">
+                    R$ {{ "%.2f"|format(pedido.valor_total) }}
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Status:</span>
+                <span class="info-value" style="color: #F44336; font-weight: 600;">
+                    ❌ Cancelado
+                </span>
+            </div>
+        </div>
+        
+        <div class="support">
+            <p><i class="fas fa-headset"></i> Precisa de ajuda?</p>
+            <a href="tel:{{ pedido.restaurante.telefone or '(11) 99999-9999' }}" class="support-phone">
+                <i class="fas fa-phone"></i>
+                {{ pedido.restaurante.telefone or '(11) 99999-9999' }}
+            </a>
+        </div>
+        
+        <div class="actions">
+            <a href="/cardapio/{{ pedido.restaurante.slug }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Voltar ao Cardápio
+            </a>
+            <a href="/cardapio/{{ pedido.restaurante.slug }}" class="btn btn-primary">
+                <i class="fas fa-redo"></i> Tentar Novamente
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Auto-redirecionamento após 30 segundos
+        setTimeout(() => {
+            window.location.href = "/cardapio/{{ pedido.restaurante.slug }}";
+        }, 30000);
+    </script>
+</body>
+</html>
